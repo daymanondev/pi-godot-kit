@@ -1,0 +1,11 @@
+{
+  "name": "pi-godot-kit",
+  "version": "0.1.0",
+  "description": "Pi package — skills + tools cho phát triển game Godot (cozy / 2D-first). agy-image asset gen, rig, scaffold.",
+  "keywords": ["pi-package"],
+  "license": "MIT",
+  "pi": {
+    "skills": ["./skills"],
+    "extensions": ["./extensions"]
+  }
+}

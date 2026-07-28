@@ -1,0 +1,2 @@
+# Pi extensions for pi-godot-kit will live here (e.g. asset-pipeline tools).
+# Convention: extensions/*.ts auto-discovered by Pi. Empty for now.
