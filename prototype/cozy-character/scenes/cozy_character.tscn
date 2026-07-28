@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://bcozych0001"]
+
+[ext_resource type="Script" path="res://scripts/cozy_character.gd" id="1_char"]
+
+[sub_resource type="RectangleShape2D" id="rect_box"]
+size = Vector2(20, 28)
+
+[node name="CozyCharacter" type="CharacterBody2D"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_char")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("rect_box")
+
+[node name="Camera2D" type="Camera2D" parent="."]

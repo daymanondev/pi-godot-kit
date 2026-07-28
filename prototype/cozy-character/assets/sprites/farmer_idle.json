@@ -1,0 +1,10 @@
+{
+  "source": "farmer_idle.gif",
+  "sheet": "farmer_idle.png",
+  "frame_width": 64,
+  "frame_height": 64,
+  "columns": 2,
+  "rows": 2,
+  "frame_count": 4,
+  "fps": 6.25
+}

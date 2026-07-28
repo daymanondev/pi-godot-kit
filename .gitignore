@@ -4,3 +4,8 @@ node_modules/
 
 # pi-subagents runtime artifacts (sessions, outputs)
 .pi-subagents/
+
+# Godot editor import cache + build output
+.godot/
+*.translation
+godot.export.log

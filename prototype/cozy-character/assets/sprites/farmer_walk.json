@@ -1,0 +1,10 @@
+{
+  "source": "farmer_walk.gif",
+  "sheet": "farmer_walk.png",
+  "frame_width": 64,
+  "frame_height": 64,
+  "columns": 3,
+  "rows": 2,
+  "frame_count": 6,
+  "fps": 11.111
+}
