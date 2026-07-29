@@ -40,7 +40,11 @@ func _build_frames() -> SpriteFrames:
 	var dirs := {"front": "front_3q", "back": "back", "side": "side_right"}
 	for d in dirs:
 		sf.add_animation("walk_" + d)
-		for i in 4:
+		# cycle = [stand, step, stand, step] — NO mirror (mirroring flips the
+		# facing direction, causing front-wobble + wrong-facing side frames).
+		# Tradeoff: the step repeats (slight slide). True alternation needs a
+		# re-generated sheet with 2 distinct same-facing step poses.
+		for i in [0, 1, 2, 1]:
 			sf.add_frame("walk_" + d, load("res://character_frames/%s_%d.png" % [dirs[d], i]))
 		sf.set_animation_speed("walk_" + d, 8.0)
 		sf.set_animation_loop("walk_" + d, true)
