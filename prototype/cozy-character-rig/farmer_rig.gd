@@ -78,12 +78,26 @@ func _add(part_name: String, parent: Node, origin: Vector2) -> Node2D:
 
 
 func _build() -> void:
-	# Center the character so the torso's hip joint is at the origin.
-	var torso_joint := _vec(pivots["torso"]["joint_global"])
-	var torso := _add("torso", self, Vector2.ZERO)
+	# Torso-local extents (torso node at origin, hip joint at origin).
+	var torso_joint_local := _vec(pivots["torso"]["joint"])
+	var tsz: Array = pivots["torso"]["size"]
+	var top_y := -torso_joint_local.y
+	var bottom_y := float(tsz[1]) - torso_joint_local.y
+	var left_x := -torso_joint_local.x
+	var right_x := float(tsz[0]) - torso_joint_local.x
+	# Snap each part's joint onto a torso anchor so parts CONNECT (close the
+	# pre-separated gaps from the source art) instead of floating apart.
+	# Push limbs ~40px INTO the torso so visible content overlaps (z-order hides seams).
+	var anchors := {
+		"head": Vector2(0, top_y + 40),                       # neck sunk into torso top
+		"left_arm": Vector2(left_x + 80, top_y + 60),        # left shoulder, pushed in
+		"right_arm": Vector2(right_x - 80, top_y + 60),      # right shoulder, pushed in
+		"left_leg": Vector2(left_x + 145, bottom_y - 40),    # left hip, pushed up/in
+		"right_leg": Vector2(right_x - 145, bottom_y - 40),  # right hip, pushed up/in
+	}
+	_add("torso", self, Vector2.ZERO)
 	for n in ["head", "left_arm", "right_arm", "left_leg", "right_leg"]:
-		var j := _vec(pivots[n]["joint_global"])
-		_add(n, torso, j - torso_joint)
+		_add(n, bones["torso"], anchors[n])
 	_set_draw_order()
 
 
