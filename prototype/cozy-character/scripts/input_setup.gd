@@ -1,15 +1,12 @@
 extends Node
 ## Autoload: registers movement input actions at runtime.
-##
-## PROTOTYPE NOTE: a real template would put these in project.godot's [input]
-## section (Godot editor: Project > Project Settings > Input Map). We register
-## them in code here to avoid the brittle project.godot input serialization and
-## to guarantee the actions exist for the headless self-test (Input.action_press).
+## Top-down 4-directional (wasd / arrows) for the multi-direction chibi.
 
 func _ready() -> void:
 	_ensure("move_left", [KEY_A, KEY_LEFT])
 	_ensure("move_right", [KEY_D, KEY_RIGHT])
-	_ensure("jump", [KEY_SPACE, KEY_W, KEY_UP])
+	_ensure("move_up", [KEY_W, KEY_UP])
+	_ensure("move_down", [KEY_S, KEY_DOWN])
 
 
 func _ensure(action: String, keys: Array) -> void:

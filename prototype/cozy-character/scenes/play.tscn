@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/cozy_multidir.gd" id="1_player"]
+
+[sub_resource type="CircleShape2D" id="Circle_shape"]
+radius = 30.0
+
+[node name="World" type="Node2D"]
+
+[node name="Bush1" type="Polygon2D" parent="."]
+position = Vector2(-280, -160)
+color = Color(0.27, 0.42, 0.22, 1)
+polygon = PackedVector2Array(-20, -20, 20, -20, 20, 20, -20, 20)
+
+[node name="Bush2" type="Polygon2D" parent="."]
+position = Vector2(300, 120)
+color = Color(0.27, 0.42, 0.22, 1)
+polygon = PackedVector2Array(-20, -20, 20, -20, 20, 20, -20, 20)
+
+[node name="Bush3" type="Polygon2D" parent="."]
+position = Vector2(-150, 240)
+color = Color(0.27, 0.42, 0.22, 1)
+polygon = PackedVector2Array(-20, -20, 20, -20, 20, 20, -20, 20)
+
+[node name="Bush4" type="Polygon2D" parent="."]
+position = Vector2(240, -260)
+color = Color(0.27, 0.42, 0.22, 1)
+polygon = PackedVector2Array(-20, -20, 20, -20, 20, 20, -20, 20)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+script = ExtResource("1_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+centered = true
+scale = Vector2(0.5, 0.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("Circle_shape")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(1.6, 1.6)
