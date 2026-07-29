@@ -1,0 +1,17 @@
+config_version=5
+
+[application]
+
+config/name="cozy-character-rig-arm"
+run/main_scene="res://scenes/rig.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+
+[display]
+
+window/size/viewport=600,600
+window/size/resizable=false
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.82, 0.82, 0.82, 1)
