@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://character.png" id="1_char"]
+[ext_resource type="Script" path="res://farmer_squash.gd" id="2_scr"]
+
+[node name="Farmer" type="Sprite2D"]
+texture = ExtResource("1_char")
+centered = true
+script = ExtResource("2_scr")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -490)
+zoom = Vector2(0.52, 0.52)
