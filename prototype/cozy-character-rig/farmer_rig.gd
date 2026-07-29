@@ -16,10 +16,32 @@ var bones: Dictionary = {}  # part name -> Node2D (rotates around its joint)
 
 var _t: float = 0.0
 
+# --- headless frame capture (render rig -> PNGs -> GIF), gated by --capture arg ---
+var _cap := false
+var _f := 0
+const CAP_N := 96
+const CAP_DIR := "/tmp/rig_frames"
+
 
 func _ready() -> void:
+	for a in OS.get_cmdline_args():
+		if a == "--capture":
+			_cap = true
+			DirAccess.make_dir_recursive_absolute(CAP_DIR)
 	_load_pivots()
 	_build()
+
+
+func _process(_delta: float) -> void:
+	if not _cap:
+		return
+	if _f >= CAP_N:
+		get_tree().quit()
+		return
+	var img := get_viewport().get_texture().get_image()
+	if img != null:
+		img.save_png("%s/f%04d.png" % [CAP_DIR, _f])
+	_f += 1
 
 
 func _load_pivots() -> void:
