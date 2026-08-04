@@ -9,3 +9,7 @@ node_modules/
 .godot/
 *.translation
 godot.export.log
+
+# Python bytecode
+__pycache__/
+*.py[cod]

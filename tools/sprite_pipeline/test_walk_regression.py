@@ -24,10 +24,26 @@ from PIL import Image
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SHEET = REPO / "prototype/cozy-character-real/farmer_multidir/multidir_v4.jpg"
+REF_DIR = REPO / "prototype/cozy-character/character_frames"
 TOOL = HERE / "sprite_pipeline.py"
 
 CANVAS = (340, 340)
 DIRECTIONS = ("front_3q", "back", "side_right")
+# how close the reproduced frames must be to the committed reference frames.
+# Generous enough to absorb minor per-cell JPEG/crop variance, tight enough to
+# catch a real split/align/bg-remove regression (e.g. uncleared bg -> width ~300).
+TOL = {"width": 25, "height": 25, "feet_y": 12, "center_x": 25}
+
+
+def _metrics(img: Image.Image) -> dict[str, int]:
+    """Character placement metrics from the alpha bbox."""
+    x0, y0, x1, y1 = img.getchannel("A").getbbox()  # type: ignore[misc]
+    return {
+        "width": x1 - x0,
+        "height": y1 - y0,
+        "feet_y": y1,
+        "center_x": (x0 + x1) // 2,
+    }
 
 
 def _contact_sheet(frames_by_dir: dict[str, list[Image.Image]], path: Path) -> None:
@@ -72,6 +88,25 @@ def main() -> int:
             assert w < 250 and h < 320, f"{d}: bbox {bb} too wide (bg not cleared?)"
             assert w > 80 and h > 150, f"{d}: bbox {bb} too small (no character?)"
             assert 310 <= bb[3] <= 328, f"{d}: feet at y={bb[3]}, expected ~322"
+
+    # regression guard: compare each reproduced frame's placement to the
+    # committed reference frames (the named baseline for criterion 2).
+    refs_present = all((REF_DIR / f"{d}_{i}.png").is_file()
+                       for d in DIRECTIONS for i in range(4))
+    if refs_present:
+        for d, frames in frames_by_dir.items():
+            for i, fr in enumerate(frames):
+                got = _metrics(fr)
+                ref = _metrics(Image.open(REF_DIR / f"{d}_{i}.png").convert("RGBA"))
+                for key in TOL:
+                    diff = abs(got[key] - ref[key])
+                    assert diff <= TOL[key], (
+                        f"{d}_{i}: {key} drift {diff} > {TOL[key]} "
+                        f"(got {got[key]}, ref {ref[key]})"
+                    )
+        print("ok: reproduced frames match committed reference within tolerance")
+    else:
+        print("skip reference comparison: committed frames not present")
 
     _contact_sheet(frames_by_dir, Path("/tmp/walk_regression_contact.png"))
     print(f"ok: reproduced {sum(len(v) for v in frames_by_dir.values())} walk frames, "

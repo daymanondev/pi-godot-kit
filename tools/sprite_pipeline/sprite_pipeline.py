@@ -10,8 +10,10 @@ but was never committed (issue #21). Pure Pillow only.
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import NoReturn
 
 from PIL import Image, ImageDraw
 
@@ -199,10 +201,16 @@ def _canvas_type(value: str) -> tuple[int, int]:
         raise argparse.ArgumentTypeError("expected WxH, e.g. 340x340") from exc
 
 
+def die(msg: str, code: int = 1) -> NoReturn:
+    """Print an error to stderr and exit — matches pack_spritesheet's convention."""
+    print(f"sprite_pipeline: error: {msg}", file=sys.stderr)
+    raise SystemExit(code)
+
+
 def _load_sheet(path: Path) -> Image.Image:
     """Open the input sheet, with a clean error on a missing file."""
     if not path.is_file():
-        raise SystemExit(f"sprite_pipeline: sheet not found: {path}")
+        die(f"sheet not found: {path}")
     return Image.open(path).convert("RGB")
 
 
@@ -241,7 +249,8 @@ def _main() -> None:
         for i, fr in enumerate(frames):
             fr.save(args.out / f"{direction}_{i}.png")
     n = sum(len(v) for v in cycles.values())
-    print(f"wrote {n} frames ({len(cycles)} directions x {len(next(iter(cycles.values())))}) to {args.out}")
+    per = len(next(iter(cycles.values()))) if cycles else 0
+    print(f"wrote {n} frames ({len(cycles)} directions x {per}) to {args.out}")
 
 
 if __name__ == "__main__":
