@@ -1,0 +1,45 @@
+CRITICAL: This is a STANDING-STILL IDLE / BREATHING sheet. The character is
+NOT walking in ANY frame. The feet are GLUED to the same spot in all 4 frames of
+every row. The legs do NOT part into a stride, do NOT cross, and do NOT lift off
+the ground. The arms hang loose at the sides and do NOT swing. The ONLY motion
+is a gentle rise and fall of the chest and shoulders as the character breathes.
+
+A character IDLE BREATHING sprite sheet as a clean GRID of 3 rows by 4 columns
+(12 cells) with thin black gridlines separating cells. All 12 cells show the
+EXACT SAME chibi farmer standing still — identical proportions and colors to the
+reference image: a super-deformed chibi farmer wearing a sandy-yellow straw hat
+with a brown ribbon, a red long-sleeve shirt, blue denim overalls with a front
+pocket and yellow buttons, and brown boots; big round head about 40% of body
+height, large reflective eyes, soft pink blush cheeks, chestnut hair, clean
+dark-brown outlines, clean cel-shaded vector style with soft gradients, warm
+palette, NOT pixelated. This is the SAME character shown in the reference image
+file below — match its proportions, colors and rendering EXACTLY.
+
+Within EACH row, the legs and feet are IDENTICAL in all 4 frames — same stance,
+feet together and planted, never moving. ONLY the upper body changes subtly
+across the 4 frames as a breathing cycle:
+  frame 1 = relaxed exhale (chest/shoulders lowest, arms hanging loose),
+  frame 2 = mid inhale,
+  frame 3 = full inhale (chest/shoulders highest, very slight upward lift of
+             the whole upper body — but feet still planted),
+  frame 4 = mid exhale.
+The motion is SUBTLE — a living character gently breathing while standing still.
+Do NOT draw a walk, a stride, a step, or any leg movement.
+
+ROW 1 (TOP): a consistent 3/4 FRONT-RIGHT view (body angled ~30°, facing toward
+viewer and right) for ALL 4 frames, the SAME angle as the reference image.
+Standing still, breathing; arms at sides; feet planted together.
+ROW 2 (MIDDLE): a consistent straight-on BACK view (facing away) for all 4
+frames, with two dark-outlined back pockets on the overalls like the reference.
+Standing still, breathing; feet planted together.
+ROW 3 (BOTTOM): a consistent side PROFILE facing RIGHT for all 4 frames.
+STANDING STILL — feet TOGETHER and planted, arms hanging straight down at the
+sides, chest rising and falling as it breathes. ABSOLUTELY NO walking stride, no
+leg lift, no leg crossing, no arms swinging. This is a side-view idle, NOT a
+side-view walk.
+
+Super-deformed chibi, big round head ~40% of height, short stubby limbs. Each
+cell is a centered complete full-body drawing on a SOLID WHITE background, so
+all 12 characters fill their cells identically.
+
+Style reference image to match (look at this file): /Users/andrewpham/Documents/code/self-project/pi-godot-kit/prototype/cozy-character/character_frames/front_3q_0.png
