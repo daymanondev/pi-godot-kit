@@ -1,0 +1,68 @@
+CRITICAL: This is a HOE-USE / HOE-SWINGING sheet. The farmer STANDS IN PLACE
+and swings ONE hoe — the feet are PLANTED in a fixed stance and do NOT move, do
+NOT step, do NOT lunge forward, in ANY frame. Only the arms swing the hoe. The
+hoe is the EXACT SAME object in ALL 12 cells — same length, same wooden handle,
+same metal blade at the same end, drawn coherently in every frame. The metal
+blade is ALWAYS at the STRIKING end (the bottom end that hits the ground, the
+end the hands do NOT hold) and is the SAME triangular shape and size in every
+frame — it never moves to the hand end, never changes shape, never disappears.
+The 4 columns are 4 DISTINCT phases of one downward swing, NOT 4 copies.
+
+A farmer HOEING sprite sheet as a clean GRID of 3 rows by 4 columns (12 cells)
+with thin black gridlines separating cells. All 12 cells show the EXACT SAME
+chibi farmer holding ONE consistent hoe — identical proportions and colors to
+the reference image: a super-deformed chibi farmer wearing a sandy-yellow straw
+hat with a brown ribbon, a red long-sleeve shirt, blue denim overalls with a
+front pocket and yellow buttons, and brown boots; big round head about 40% of
+body height, large reflective eyes, soft pink blush cheeks, chestnut hair, clean
+dark-brown outlines, clean cel-shaded vector style with soft gradients, warm
+palette, NOT pixelated. This is the SAME character shown in the reference image
+file below — match its proportions, colors and rendering EXACTLY.
+
+THE HOE (identical rigid object in ALL 12 cells — never missing, never changing):
+  - a single straight worn brown WOODEN HANDLE, about 1.5x the farmer's body
+    height, same length and thickness in every frame; the farmer grips it with
+    BOTH hands near the top.
+  - a flat dark-grey/black TRIANGULAR metal BLADE bolted perpendicular at the
+    BOTTOM end (the striking end the hands do not hold), about as wide as the
+    farmer's head, the SAME shape and size in every single frame. The blade is
+    ALWAYS at this bottom/striking end and NEVER at the hand end. It must be
+    drawn in ALL 12 cells including the raised/wind-up pose.
+
+The 4 columns of EVERY row are these 4 DISTINCT phases of one downward swing
+(the whole hoe rotates as one rigid piece; the blade stays at the striking end;
+the FEET STAY PLANTED throughout — no step, no lunge, no walk):
+  COL 1 = WIND-UP: arms raised, hoe lifted high overhead/behind the head, blade
+           (at the striking end) pointing up and back. Hoe fully drawn — do NOT
+           omit it here.
+  COL 2 = MID DOWNSTROKE: arms coming forward and down, hoe swinging down.
+  COL 3 = STRIKE: arms extended down and forward, blade at its lowest point
+           hitting the ground just in front of the PLANTED feet. FEET DO NOT MOVE.
+  COL 4 = RECOVER: arms relaxing, hoe rising partway back up. FEET STILL PLANTED.
+These 4 poses are clearly DIFFERENT (arms and hoe sweep a real arc) but the hoe
+is the same rigid tool throughout. Do NOT draw 4 identical poses, do NOT draw a
+walk/step/lunge, and do NOT let the blade flip ends or change shape.
+
+Within EACH row the body ANGLE is consistent across all 4 frames — body and head
+never rotate between frames, feet stay in the SAME planted spot, ONLY the arms
+and the hoe move.
+
+ROW 1 (TOP): a consistent 3/4 FRONT-RIGHT view (body angled ~30°, facing toward
+viewer and right) for ALL 4 frames, the SAME angle as the reference image.
+Hoeing forward-and-down, hoe in both hands, feet planted.
+ROW 2 (MIDDLE): a consistent straight-on BACK view (facing away) for all 4
+frames, with two dark-outlined back pockets on the overalls like the reference.
+Hoeing in front of the body (we see the farmer's back, arms forward swinging the
+hoe down), feet planted.
+ROW 3 (BOTTOM): a consistent side PROFILE facing RIGHT for all 4 frames.
+STANDING IN PLACE in a fixed side stance — feet PLANTED apart and STAYING PUT for
+all 4 frames — swinging the hoe in a clear downward arc to the front-right.
+ABSOLUTELY NO forward step, no lunge, no stride at the strike: the feet do not
+move from their planted positions in any frame.
+
+Super-deformed chibi, big round head ~40% of height, short stubby limbs. Each
+cell is a centered complete full-body drawing (farmer AND the whole hoe fully
+visible) on a SOLID WHITE background, so all 12 cells fill their space
+identically and the hoe is never cut off at the frame edge.
+
+Style reference image to match (look at this file): /Users/andrewpham/Documents/code/self-project/pi-godot-kit/prototype/cozy-character/character_frames/front_3q_0.png

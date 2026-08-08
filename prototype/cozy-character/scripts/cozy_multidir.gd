@@ -6,8 +6,11 @@ class_name CozyMultiDir
 ## per-action frame cycles produced by docs/character-sprite-pipeline.md:
 ##   - walk_* : the walk stride cycle (split + mirror of the walk sheet)
 ##   - idle_* : a subtle breathing cycle (per-action sheet, ADR 0002)
+##   - hoe_*  : a one-shot hoe swing (per-action sheet, ADR 0002 / #23)
 ## Standing still plays the idle (breathing) loop for the last-moved facing,
-## instead of freezing on a single frame.
+## instead of freezing on a single frame. Pressing the `use_tool` action
+## (Space / J) plays the hoe swing once for the current facing, then returns
+## to the real idle (#23).
 ##
 ## Modes (argv):
 ##   (none)  driven by move_left/right/up/down input
@@ -18,6 +21,9 @@ class_name CozyMultiDir
 
 const SPEED := 150.0
 const IDLE_SPEED := 5.0   # fps for the breathing loop (slower than walk)
+const HOE_SPEED := 10.0   # fps for the one-shot hoe swing (4 frames ≈ 0.4s)
+const DEMO_PHASE_LEN := 1.2
+const DEMO_PHASES := 12   # 4 facing-states (3 dirs + flipped side) x {walk, idle, hoe}
 
 # direction bucket -> the directory prefix used for that direction's frame files.
 const DIRS := {"front": "front_3q", "back": "back", "side": "side_right"}
@@ -28,12 +34,14 @@ const IDLE_VEL := 5.0
 
 var _demo := false
 var _demo_t := 0.0
+var _last_phase := -1
 var _facing := "side"   # current direction bucket: front / back / side
+var _hoeing := false    # true while the one-shot hoe swing is playing
 
 # headless frame capture
 var _cap := false
 var _f := 0
-const CAP_N := 600   # ~1 full demo cycle (8 phases x 1.2s @ 60fps = 576)
+const CAP_N := 900   # ~1 full demo cycle (12 phases x 1.2s @ 60fps = 864)
 const CAP_DIR := "/tmp/play_frames"
 
 # headless Seam-2 selftest
@@ -54,6 +62,7 @@ func _ready() -> void:
 				DirAccess.make_dir_recursive_absolute(CAP_DIR)
 			"--selftest": _selftest = true
 	_sprite.sprite_frames = _build_frames()
+	_sprite.animation_finished.connect(_on_animation_finished)
 	_sprite.animation = "idle_side"
 	_sprite.play()
 	if _selftest:
@@ -66,12 +75,15 @@ func _build_frames() -> SpriteFrames:
 	# character_frames/<action>/<dir>_<i>.png.
 	_add_cycle(sf, "walk", "", 8.0)
 	_add_cycle(sf, "idle", "idle", IDLE_SPEED)
+	# hoe plays once (non-looping); _on_animation_finished returns it to idle.
+	_add_cycle(sf, "hoe", "hoe", HOE_SPEED, false)
 	return sf
 
 
-## Add a 4-frame looping animation per direction under `prefix`. `subdir` selects
-## the asset folder ("" = character_frames/, else character_frames/<subdir>/).
-func _add_cycle(sf: SpriteFrames, prefix: String, subdir: String, fps: float) -> void:
+## Add a 4-frame animation per direction under `prefix`. `subdir` selects the
+## asset folder ("" = character_frames/, else character_frames/<subdir>/).
+## `loop` defaults true (walk/idle); the one-shot hoe swing passes false.
+func _add_cycle(sf: SpriteFrames, prefix: String, subdir: String, fps: float, loop: bool = true) -> void:
 	var folder := "res://character_frames/" + (subdir + "/" if subdir != "" else "")
 	for d in DIRS:
 		var anim: String = prefix + "_" + d
@@ -79,12 +91,17 @@ func _add_cycle(sf: SpriteFrames, prefix: String, subdir: String, fps: float) ->
 		for i in 4:
 			sf.add_frame(anim, load("%s%s_%d.png" % [folder, DIRS[d], i]))
 		sf.set_animation_speed(anim, fps)
-		sf.set_animation_loop(anim, true)
+		sf.set_animation_loop(anim, loop)
 
 
 ## Choose facing, flip, and animation from the current velocity. Extracted from
 ## _physics_process so the headless selftest can exercise it deterministically.
 func _select_animation() -> void:
+	if _hoeing:
+		# the one-shot hoe swing plays to completion; don't override it with
+		# walk/idle until _on_animation_finished clears _hoeing.
+		_set_anim("hoe_" + _facing)
+		return
 	if velocity.length() < IDLE_VEL:
 		# standing still -> idle (breathing) for the last-moved facing.
 		# _facing and flip_h are retained, so idle faces the last move direction.
@@ -109,23 +126,52 @@ func _set_anim(anim: String) -> void:
 		_sprite.play()
 
 
+## Begin the one-shot hoe swing for the current facing (#23). _select_animation
+## then plays hoe_<dir>; _on_animation_finished clears _hoeing and returns to idle.
+func _start_hoe() -> void:
+	_hoeing = true
+	_select_animation()
+
+
+## animation_finished handler: when a non-looping hoe swing ends, drop back to
+## the real idle (or walk if still moving) for the retained facing.
+## NOTE: AnimatedSprite2D.animation_finished passes NO args (unlike
+## AnimationPlayer); the finished anim is read from _sprite.animation.
+func _on_animation_finished() -> void:
+	if _hoeing and _sprite.animation.begins_with("hoe_"):
+		_hoeing = false
+		_select_animation()
+
+
 func _physics_process(delta: float) -> void:
 	var vx := 0.0
 	var vy := 0.0
 	if _demo:
 		_demo_t += delta
-		# 8-phase cycle: walk each cardinal direction, idling between each so the
-		# demo shows walk<->idle transitions and idle in every facing.
-		match int(_demo_t / 1.2) % 8:
+		# 12-phase cycle: for each of 3 facings, walk in -> idle -> hoe. The hoe
+		# phase starts the one-shot swing on entry (velocity 0) so the demo shows
+		# the swing + return-to-idle in every facing, incl. the flipped side.
+		var phase := int(_demo_t / DEMO_PHASE_LEN) % DEMO_PHASES
+		if phase != _last_phase:
+			_last_phase = phase
+			if phase % 3 == 2:
+				_start_hoe()
+		match phase:
 			0: vx = 1.0    # walk right (side)
-			1: pass        # idle (last: side, flipped none)
-			2: vy = 1.0    # walk down (front)
-			3: pass        # idle (front)
-			4: vx = -1.0   # walk left (side, flipped)
-			5: pass        # idle (side, flipped)
-			6: vy = -1.0   # walk up (back)
-			7: pass        # idle (back)
+			1: pass        # idle (side)
+			2: pass        # hoe (side)
+			3: vy = 1.0    # walk down (front)
+			4: pass        # idle (front)
+			5: pass        # hoe (front)
+			6: vx = -1.0   # walk left (side, flipped)
+			7: pass        # idle (side, flipped)
+			8: pass        # hoe (side, flipped)
+			9: vy = -1.0   # walk up (back)
+			10: pass       # idle (back)
+			11: pass       # hoe (back)
 	else:
+		if Input.is_action_just_pressed("use_tool") and not _hoeing:
+			_start_hoe()
 		vx = Input.get_axis("move_left", "move_right")
 		vy = Input.get_axis("move_up", "move_down")
 	velocity = Vector2(vx, vy).normalized() * SPEED
@@ -181,7 +227,63 @@ func _run_selftest() -> void:
 	if not _expect(Vector2(0.0, -SPEED), "walk_back", "move up"): return
 	if not _expect(Vector2.ZERO, "idle_back", "stop (back)"): return
 
-	print("[selftest] PASS — 6 animations (walk_*/idle_*), idle@rest, walk when moving, facing+flip retained into idle")
+	# ---- hoe action (#23): hoe_* present, 4 frames, non-looping ----
+	for a in ["hoe_front", "hoe_back", "hoe_side"]:
+		if not sf.has_animation(a):
+			return _fail("SpriteFrames missing hoe animation: %s" % a)
+		if sf.get_frame_count(a) != 4:
+			return _fail("hoe %s has %d frames, expected 4" % [a, sf.get_frame_count(a)])
+		if sf.get_animation_loop(a):
+			return _fail("hoe animation %s must NOT loop (plays once then idle)" % a)
+
+	# at rest, facing side -> start hoe -> hoe_side; finish -> back to idle_side
+	_facing = "side"
+	_sprite.flip_h = false
+	velocity = Vector2.ZERO
+	_start_hoe()
+	if _sprite.animation != "hoe_side":
+		return _fail("start_hoe (side): expected hoe_side, got %s" % _sprite.animation)
+	if not _hoeing:
+		return _fail("start_hoe (side): _hoeing should be true")
+	_on_animation_finished()  # simulate the swing completing
+	if _hoeing:
+		return _fail("after hoe finish (side): _hoeing should be false")
+	if _sprite.animation != "idle_side":
+		return _fail("after hoe finish (side): expected idle_side, got %s" % _sprite.animation)
+
+	# facing front -> hoe_front -> idle_front
+	_facing = "front"
+	_start_hoe()
+	if _sprite.animation != "hoe_front":
+		return _fail("start_hoe (front): expected hoe_front, got %s" % _sprite.animation)
+	_on_animation_finished()
+	if _sprite.animation != "idle_front":
+		return _fail("after hoe finish (front): expected idle_front, got %s" % _sprite.animation)
+
+	# facing back -> hoe_back -> idle_back
+	_facing = "back"
+	_start_hoe()
+	if _sprite.animation != "hoe_back":
+		return _fail("start_hoe (back): expected hoe_back, got %s" % _sprite.animation)
+	_on_animation_finished()
+	if _sprite.animation != "idle_back":
+		return _fail("after hoe finish (back): expected idle_back, got %s" % _sprite.animation)
+
+	# while hoeing, _select_animation must stay on hoe even if moving; on finish
+	# it falls through to walk (velocity still set).
+	_facing = "side"
+	velocity = Vector2.ZERO
+	_start_hoe()
+	velocity = Vector2(SPEED, 0.0)  # now moving mid-swing
+	_select_animation()
+	if _sprite.animation != "hoe_side":
+		return _fail("while hoeing + moving: should stay hoe_side, got %s" % _sprite.animation)
+	_on_animation_finished()  # swing ends
+	_select_animation()
+	if _sprite.animation != "walk_side":
+		return _fail("hoe finished while moving: expected walk_side, got %s" % _sprite.animation)
+
+	print("[selftest] PASS — 9 animations (walk_*/idle_*/hoe_*), idle@rest, walk when moving, facing+flip retained into idle, use_tool -> hoe then idle")
 	get_tree().quit(0)
 
 

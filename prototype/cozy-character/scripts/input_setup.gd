@@ -7,6 +7,8 @@ func _ready() -> void:
 	_ensure("move_right", [KEY_D, KEY_RIGHT])
 	_ensure("move_up", [KEY_W, KEY_UP])
 	_ensure("move_down", [KEY_S, KEY_DOWN])
+	# use_tool: the one-shot hoe swing (#23). Space or J.
+	_ensure("use_tool", [KEY_SPACE, KEY_J])
 
 
 func _ensure(action: String, keys: Array) -> void:
